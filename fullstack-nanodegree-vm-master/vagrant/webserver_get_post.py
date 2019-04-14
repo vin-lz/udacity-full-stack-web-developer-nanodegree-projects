@@ -1,39 +1,11 @@
-#!/usr/bin/env python3
-
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import cgi
-
-## import CRUD Operations from Lesson 1 ##
-from database_setup import Base, Restaurant, MenuItem
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-#Create session and connect to DB
-engine = create_engine('sqlite:///restaurantmenu.db')
-Base.metadata.bind = engine
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
 
 
 class WebServerHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            if self.path.endswith("/restaurants"):
-                restaurants = session.query(Restaurant).all()
-                self.send_response(200)
-                self.send_header('Content-type', 'text/html')
-                self.end_headers()
-                output = ""
-                output += "<html><body>"
-                for restaurant in restaurants:
-                    output += restaurant.name
-                    output += "</br>"
-                output += "</body></html>"
-                self.wfile.write(output.encode())
-                print(output)
-                return
-
             if self.path.endswith("/hello"):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
@@ -47,7 +19,6 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.wfile.write(message.encode())
                 print(message)
                 return
-
             if self.path.endswith("/hola"):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
