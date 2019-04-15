@@ -32,7 +32,7 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 for restaurant in restaurants:
                     output += restaurant.name
                     output += "</br>"
-                    output += "<a href='#'>Edit</a>"
+                    output += "<a href='/restaurants/%s/edit'>Edit</a>" % str(restaurant.id)
                     output += "</br>"
                     output += "<a href='#'>Delete</a>"
                     output += "</br>"
@@ -56,6 +56,27 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 print(output)
                 self.wfile.write(output.encode())
                 return
+
+            if self.path.endswith("/edit"):
+                restaurant_id_path = self.path.split("/")[2]
+                restaurant_query = session.query(Restaurant).filter_by(id = restaurant_id_path).one()
+                if restaurant_query != []:
+                    self.send_response(200)
+                    self.send_header('Content-type', 'text/html')
+                    self.end_headers()
+                    output = ""
+                    output += "<html><body>"
+                    output += "<h1>%s</h1>" % restaurant_query.name
+                    output += "<form method = 'POST' enctype='multipart/form-data' action = '/restaurants/%s/edit'>" % str(restaurant_id_path)
+                    output += "<input name = 'restaurant_name' type = 'text' placeholder = '%s' > " % restaurant_query.name
+                    output += "<input type='submit' value='Rename'>"
+                    output += "</form></body></html>"
+                    print(output)
+                    self.wfile.write(output.encode())
+                    return
+                
+
+
 
             # if self.path.endswith("/hello"):
             #     self.send_response(200)
@@ -134,6 +155,28 @@ class WebServerHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', 'text/html')
                 self.send_header('Location', '/restaurants')
                 self.end_headers()
+
+            if self.path.endswith("/edit"):
+                print("==============Edit page!!!=================")
+                ctype, pdict = cgi.parse_header(self.headers.get('content-type'))
+                pdict['boundary'] = bytes(pdict['boundary'], "utf-8")
+                if ctype == 'multipart/form-data':
+                    fields = cgi.parse_multipart(self.rfile, pdict)
+                    messagecontent = fields.get('restaurant_name')
+                    print(messagecontent[0])
+
+                    #Edit restaurant name
+                    restaurant_id_path = self.path.split("/")[2]
+                    restaurant_query = session.query(Restaurant).filter_by(id = restaurant_id_path).one()
+                    if restaurant_query != []:
+                        restaurant_query.name = messagecontent[0].decode()
+                        session.add(restaurant_query)
+                        session.commit()
+                        self.send_response(301)
+                        self.send_header('Content-type', 'text/html')
+                        self.send_header('Location', '/restaurants')
+                        self.end_headers()
+                
 
         except:
             pass
