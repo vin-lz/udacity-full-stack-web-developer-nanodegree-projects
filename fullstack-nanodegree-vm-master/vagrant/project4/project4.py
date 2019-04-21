@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request
+from flask import Flask, render_template, url_for, redirect, request, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item
@@ -11,6 +11,27 @@ app = Flask(__name__)
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind = engine
 
+#Making an API Endpoint (GET Request)
+@app.route('/JSON/')
+def categoriesJSON():
+    DBSesssion = sessionmaker(bind = engine)
+    session = DBSesssion()
+    categories = session.query(Category).all()
+    return jsonify(Categories = [i.serialize for i in categories])
+
+@app.route('/<int:category_id>/JSON/')
+def itemsJSON(category_id):
+    DBSesssion = sessionmaker(bind = engine)
+    session = DBSesssion()
+    items = session.query(Item).filter_by(category_id = category_id).all()
+    return jsonify(Items = [i.serialize for i in items])
+
+@app.route('/<int:category_id>/<int:item_id>/JSON/')
+def itemJSON(category_id, item_id):
+    DBSesssion = sessionmaker(bind = engine)
+    session = DBSesssion()
+    item = session.query(Item).filter_by(category_id = category_id, id = item_id).one()
+    return jsonify(Item = item.serialize)
 
 @app.route('/')
 def showCategories():
@@ -19,7 +40,7 @@ def showCategories():
     categories = session.query(Category).all()
     return render_template('index.html', categories = categories)
 
-
+#Making an HTML Endpoint (GET & POST Request)
 @app.route('/new_category/', methods = ['GET', 'POST'])
 def newCategory():
     if request.method == 'POST':
