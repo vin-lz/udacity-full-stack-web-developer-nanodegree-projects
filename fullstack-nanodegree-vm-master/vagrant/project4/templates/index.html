@@ -10,7 +10,7 @@
         <h2>Categories</h2>
 
         {% for i in categories %}
-        <a href='{{url_for('showItems', category_id = i.id)}}'>{{i.name}}</a>
+        <a href='{{url_for('showItems', category_id = i.id)}}'><h3>{{i.name}}</h3></a>
         </br>
         <a href='{{url_for('editCategory', category_id = i.id)}}'>Edit</a>
         <a href='{{url_for('deleteCategory', category_id = i.id)}}'>Delete</a>
