@@ -17,6 +17,7 @@ def categoriesJSON():
     DBSesssion = sessionmaker(bind=engine)
     session = DBSesssion()
     categories = session.query(Category).all()
+    session.close()
     return jsonify(Categories=[i.serialize for i in categories])
 
 
@@ -25,6 +26,7 @@ def itemsJSON(category_id):
     DBSesssion = sessionmaker(bind=engine)
     session = DBSesssion()
     items = session.query(Item).filter_by(category_id=category_id).all()
+    session.close()
     return jsonify(Items=[i.serialize for i in items])
 
 
@@ -34,6 +36,7 @@ def itemJSON(category_id, item_id):
     session = DBSesssion()
     item = session.query(Item).filter_by(
         category_id=category_id, id=item_id).one()
+    session.close()
     return jsonify(Item=item.serialize)
 
 
@@ -43,6 +46,7 @@ def showCategories():
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     categories = session.query(Category).all()
+    session.close()
     return render_template('index.html', categories=categories)
 
 
@@ -55,6 +59,7 @@ def newCategory():
         session.add(newCategory)
         session.commit()
         flash('New category %s created!' % newCategory.name)
+        session.close()
         return redirect(url_for('showCategories'))
     else:
         return render_template('new_category.html')
@@ -70,8 +75,10 @@ def editCategory(category_id):
         session.add(category)
         session.commit()
         flash('Category %s updated!' % category.name)
+        session.close()
         return redirect(url_for('showCategories'))
     else:
+        session.close()
         return render_template('edit_category.html', category_id=category_id, category=category)
 
 
@@ -84,8 +91,10 @@ def deleteCategory(category_id):
         session.delete(category)
         session.commit()
         flash('Category %s deleted!' % category.name)
+        session.close()
         return redirect(url_for('showCategories'))
     else:
+        session.close()
         return render_template('delete_category.html', category_id=category_id, category=category)
 
 
@@ -95,6 +104,7 @@ def showItems(category_id):
     session = DBSession()
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category_id).all()
+    session.close()
     return render_template('category.html', category_id=category_id, category=category, items=items)
 
 
@@ -104,6 +114,7 @@ def showItem(category_id, item_id):
     session = DBSession()
     item = session.query(Item).filter_by(
         category_id=category_id, id=item_id).one()
+    session.close()
     return render_template('item.html', category_id=category_id, item_id=item_id, item=item)
 
 
@@ -117,6 +128,7 @@ def newItem(category_id):
         session.add(newItem)
         session.commit()
         flash('New item %s created!' % newItem.name)
+        session.close()
         return redirect(url_for('showItems', category_id=category_id))
     else:
         return render_template('new_item.html', category_id=category_id)
@@ -134,8 +146,10 @@ def editItem(category_id, item_id):
         session.add(item)
         session.commit()
         flash('Item %s updated!' % item.name)
+        session.close()
         return redirect(url_for('showItem', category_id=category_id, item_id=item_id))
     else:
+        session.close()
         return render_template('edit_item.html', category_id=category_id, item_id=item_id, item=item)
 
 
@@ -149,8 +163,10 @@ def deleteItem(category_id, item_id):
         session.delete(item)
         session.commit()
         flash('Item %s deleted!' % item.name)
+        session.close()
         return redirect(url_for('showItems', category_id=category_id))
     else:
+        session.close()
         return render_template('delete_item.html', category_id=category_id, item_id=item_id, item=item)
 
 
