@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Create a New Item</title>
-    </head>
-    <body>
-        <h1>New Item</h1>
-        <form action="{{url_for('newItem', category_id = category_id)}}"
-        method='post'>
-            <p>Name:</p>
-            <input type='text' size='30' name='name'>
-            </br>
-            <p>Description:</p>
-            <input type='text' size='128' name='description'>
-            <input type='submit' value='Create'>
-            <a href="{{url_for('showItems', category_id=category_id)}}">Cancel</a>
-        </form>
-    </body>
+
+<head>
+    <meta charset="utf-8">
+    <link rel=stylesheet type=text/css href="{{url_for('static', filename='styles.css')}}">
+    <title>Create a New Item</title>
+</head>
+
+<body>
+    <div class="pane">
+        <header>
+            <h1>Catalog App</h1>
+        </header>
+        <main>
+            <h2>New Item</h2>
+            <form action="{{url_for('newItem', category_id = category_id)}}" method="post">
+                <dl>
+                    <dt>Name:</dt>
+                    <dd><input type="text" required="required" size="30" name="name"></dd>
+                    <dt>Description:</dt>
+                    <dd><textarea name="description" rows="10" cols="40"></textarea></dd>
+                    <input type="submit" value="Create">
+                    <a href="{{url_for('showItems', category_id=category_id)}}">Cancel</a>
+                </dl>
+            </form>
+        </main>
+    </div>
+</body>
+
 </html>

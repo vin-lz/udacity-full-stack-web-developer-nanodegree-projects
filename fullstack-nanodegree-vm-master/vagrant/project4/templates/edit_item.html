@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Edit an Item</title>
-    </head>
-    <body>
-        <h1>Edit an item</h1>
-        <form action="{{url_for('editItem', category_id = category_id, item_id = item_id)}}"
-        method='post'>
-            <p>Name:</p>
-            <input type='text' size='30' name='name' placeholder="{{item.name}}">
-            </br>
-            <p>Description:</p>
-            <input type='text' size='128' name='description' placeholder="{{item.description}}">
-            <input type='submit' value='Edit'>
-            <a href="{{url_for('showItem', category_id=category_id, item_id=item_id)}}">Cancel</a>
-        </form>
-    </body>
+
+<head>
+    <meta charset="utf-8">
+    <link rel=stylesheet type=text/css href="{{url_for('static', filename='styles.css')}}">
+    <title>Edit Item {{item.name}}</title>
+</head>
+
+<body>
+    <div class="pane">
+        <header>
+            <h1>Catalog App</h1>
+        </header>
+        <main>
+            <h1>Edit item {{item.name}}</h1>
+            <form action="{{url_for('editItem', category_id = category_id, item_id = item_id)}}" method="post">
+                <dl>
+                    <dt>Name:</dt>
+                    <dd><input type="text" size="30" required="required" name="name" placeholder="{{item.name}}"></dd>
+                    <dt>Description:</dt>
+                    <dd><textarea name="description" rows="10" cols="40" placeholder="{{item.description}}"></textarea></dd>
+                    <input type="submit" value="Edit">
+                    <a href="{{url_for('showItem', category_id=category_id, item_id=item_id)}}">Cancel</a>
+                </dl>
+            </form>
+        </main>
+    </div>
+</body>
+
 </html>

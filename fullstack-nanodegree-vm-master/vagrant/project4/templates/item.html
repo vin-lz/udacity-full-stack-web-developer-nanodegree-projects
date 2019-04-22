@@ -1,13 +1,28 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>{{item.name}}</title>
-    </head>
-    <body>
-        <h1>Catalog App</h1>
-        <h2>{{item.name}}</h2>
-        <p>Description: {{item.description}}</p>
-        <a href="{{url_for('showItems', category_id = category_id)}}">Back</a>
-    </body>
+
+<head>
+    <meta charset="utf-8">
+    <link rel=stylesheet type=text/css href="{{url_for('static', filename='styles.css')}}">
+    <title>Item {{item.name}}</title>
+</head>
+
+<body>
+    <div class="pane">
+        <header>
+            <h1>Catalog App</h1>
+        </header>
+        <main>
+            <h2>{{item.name}}</h2>
+            <div class="description"><Strong>Description: </Strong>
+                {% if not item.description %}
+                No description
+                {% else %}
+                {{item.description}}
+                {% endif %}
+            </div>
+            <a href="{{url_for('showItems', category_id = category_id)}}">Back</a>
+        </main>
+</body>
+
 </html>

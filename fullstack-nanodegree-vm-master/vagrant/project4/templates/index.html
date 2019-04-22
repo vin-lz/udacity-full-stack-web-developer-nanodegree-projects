@@ -3,36 +3,49 @@
 
 <head>
     <meta charset="utf-8">
+    <link rel=stylesheet type=text/css href="{{url_for('static', filename='styles.css')}}">
     <title>Item Catalog</title>
 </head>
 
 <body>
-    <h1>Catalog App</h1>
-    <a href="/new_category/">Create a new category</a>
-    <div class='flash'>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li><strong>{{message}}</strong></li>
+    <div class="pane">
+        <header>
+            <h1>Catalog App</h1>
+        </header>
+        <section class="prompt">
+            <a href="/new_category/">Create a new category</a>
+        </section>
+        <section class="flash">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <li><strong>{{message}}</strong></li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+        </section>
+        <main>
+            <h2>Categories</h2>
+            {% if not categories %}
+            <span class="empty">
+                <p>There is no category</p>
+            </span>
+            {% endif %}
+            {% for i in categories %}
+            <div class="data">
+                <span class="name">
+                    <a href='{{url_for('showItems', category_id = i.id)}}'>{{i.name}}</a>
+                </span>
+                <span class="actions">
+                    <a href='{{url_for('editCategory', category_id = i.id)}}'>Edit</a>
+                    <a href='{{url_for('deleteCategory', category_id = i.id)}}'>Delete</a>
+                </span>
+            </div>
             {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
+        </main>
     </div>
-    <h2>Categories</h2>
-
-    {% for i in categories %}
-    <a href='{{url_for('showItems', category_id = i.id)}}'>
-        <h3>{{i.name}}</h3>
-    </a>
-    </br>
-    <a href='{{url_for('editCategory', category_id = i.id)}}'>Edit</a>
-    <a href='{{url_for('deleteCategory', category_id = i.id)}}'>Delete</a>
-    </br>
-    </br>
-    {% endfor %}
-
 </body>
 
 </html>

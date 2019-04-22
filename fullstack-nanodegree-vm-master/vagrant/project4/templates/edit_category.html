@@ -1,17 +1,31 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Edit a Category</title>
-    </head>
-    <body>
-        <h1>Edit a category</h1>
-        <form action="{{url_for('editCategory', category_id = category_id)}}"
-        method='post'>
-            <p>Name:</p>
-            <input type='text' size='30' name='name' placeholder="{{category.name}}">
-            <input type='submit' value='Edit'>
-            <a href="/">Cancel</a>
-        </form>
-    </body>
+
+<head>
+    <meta charset="utf-8">
+    <link rel=stylesheet type=text/css href="{{url_for('static', filename='styles.css')}}">
+    <title>Edit Category {{category.name}}</title>
+</head>
+
+<body>
+    <div class="pane">
+        <header>
+            <h1>Catalog App</h1>
+        </header>
+        <main>
+            <h2>Edit Category {{category.name}}</h2>
+            <form action="{{url_for('editCategory', category_id = category_id)}}" method="post">
+                <dl>
+                    <dt>Name:</dt>
+                    <dd>
+                        <input type="text" size='="30" required="required" name='name' placeholder="{{category.name}}">
+                        <input type="submit" value="Create">
+                        <a href="/">Cancel</a>
+                    </dd>
+                </dl>
+            </form>
+        </main>
+    </div>
+</body>
+
 </html>
