@@ -90,3 +90,7 @@ header {
     color: #cccccc;
     margin:0;
 }
+
+#signinButton {
+    margin: 5px;
+}

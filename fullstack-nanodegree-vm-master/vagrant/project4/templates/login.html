@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel=stylesheet type=text/css href="{{url_for('static', filename='styles.css')}}">
+    <title>Item Catalog Login</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+    <script>
+        function start() {
+            gapi.load('auth2', function () {
+                auth2 = gapi.auth2.init({
+                    client_id: '988268216767-fithseniajbcihprvskbrq254p8thur2.apps.googleusercontent.com'
+                });
+            });
+        }
+    </script>
+</head>
+
+
+<body>
+    <div class="pane">
+        <header>
+            <h1>Catalog App</h1>
+        </header>
+        <main>
+            <h2>Welcome,</h2>
+            <button id="signinButton">Google Signin</button>
+            <div id="result"></div>
+            <script>
+                $('#signinButton').click(function () {
+                    function signInCallback(authResult) {
+                        if (authResult['code']) {
+                            $('#signinButton').attr('style', 'display: none');
+                            $.ajax({
+                                type: 'POST',
+                                url: '/gconnect?state={{STATE}}',
+                                processData: false,
+                                contentType: 'application/octet-stream; charset=utf-8',
+                                data: authResult['code'],
+                                success: function (result) {
+                                    $('#result').html(result + '</br><p>Login Successful!</br>Redirecting...</p>')
+                                    setTimeout(function () {
+                                        window.location.href = "/";
+                                    }, 2000);
+                                },
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                            });
+                        } else if (authResult['error']) {
+                            console.log('There was an error: ' + authResult['error']);
+                        } else {
+                            $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+                        }
+                    }
+                    auth2.grantOfflineAccess().then(signInCallback);
+                });
+            </script>
+        </main>
+    </div>
+</body>
+
+</html>

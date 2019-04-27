@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <link rel=stylesheet type=text/css href="{{url_for('static', filename='styles.css')}}">
-    <title>Category {{category.name}}</title>
+    <title>Item Catalog</title>
 </head>
 
 <body>
@@ -14,12 +14,13 @@
         </header>
         <section class="prompt">
             <span class="create">
-                <a href="/login">Login</a>
+                <a href="/new_category/">Create a new category</a>
             </span>
             <span class="back">
-                <a href="/">Back</a>
+                <a href="/gdisconnect">Logout</a>
             </span>
         </section>
+
         <section class="flash">
             {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -32,16 +33,20 @@
             {% endwith %}
         </section>
         <main>
-            <h2>{{category.name}}</h2>
-            {% if not items %}
+            <h2>Categories</h2>
+            {% if not categories %}
             <span class="empty">
-                <p>There is no item in this category</p>
+                <p>There is no category</p>
             </span>
             {% endif %}
-            {% for i in items %}
+            {% for i in categories %}
             <div class="data">
                 <span class="name">
-                    <a href="{{url_for('showItem', category_id = category_id, item_id = i.id)}}">{{i.name}}</a>
+                    <a href='{{url_for('showItems', category_id = i.id)}}'>{{i.name}}</a>
+                </span>
+                <span class="actions">
+                    <a href='{{url_for('editCategory', category_id = i.id)}}'>Edit</a>
+                    <a href='{{url_for('deleteCategory', category_id = i.id)}}'>Delete</a>
                 </span>
             </div>
             {% endfor %}

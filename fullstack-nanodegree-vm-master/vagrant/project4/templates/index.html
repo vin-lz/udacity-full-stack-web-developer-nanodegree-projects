@@ -13,7 +13,7 @@
             <h1>Catalog App</h1>
         </header>
         <section class="prompt">
-            <a href="/new_category/">Create a new category</a>
+            <a href="/login">Login</a>
         </section>
         <section class="flash">
             {% with messages = get_flashed_messages() %}
@@ -37,10 +37,6 @@
             <div class="data">
                 <span class="name">
                     <a href='{{url_for('showItems', category_id = i.id)}}'>{{i.name}}</a>
-                </span>
-                <span class="actions">
-                    <a href='{{url_for('editCategory', category_id = i.id)}}'>Edit</a>
-                    <a href='{{url_for('deleteCategory', category_id = i.id)}}'>Delete</a>
                 </span>
             </div>
             {% endfor %}

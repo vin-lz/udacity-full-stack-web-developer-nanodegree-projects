@@ -14,10 +14,11 @@
         </header>
         <section class="prompt">
             <span class="create">
-                <a href="/login">Login</a>
+                <a href="{{url_for('newItem', category_id = category_id)}}">Create a new item</a>
             </span>
             <span class="back">
                 <a href="/">Back</a>
+                <a href="/gdisconnect">Logout</a>
             </span>
         </section>
         <section class="flash">
@@ -42,6 +43,10 @@
             <div class="data">
                 <span class="name">
                     <a href="{{url_for('showItem', category_id = category_id, item_id = i.id)}}">{{i.name}}</a>
+                </span>
+                <span class="actions">
+                    <a href="{{url_for('editItem', category_id = category_id, item_id = i.id)}}">Edit</a>
+                    <a href="{{url_for('deleteItem', category_id = category_id, item_id = i.id)}}">Delete</a>
                 </span>
             </div>
             {% endfor %}
