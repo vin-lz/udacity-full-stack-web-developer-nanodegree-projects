@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from database_setup import Base, Restaurant, MenuItem
+from database_setup import Base, Restaurant, MenuItem, User
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, asc
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
@@ -16,10 +16,10 @@ import requests
 app = Flask(__name__)
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())[
-                       'web']['client_id']
+    'web']['client_id']
 
 # Connect to Database and create database session
-engine = create_engine('sqlite:///restaurantmenu.db')
+engine = create_engine('sqlite:///restaurantmenuwithusers.db')
 Base.metadata.bind = engine
 
 
@@ -28,7 +28,6 @@ Base.metadata.bind = engine
 def restaurantMenuJSON(restaurant_id):
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     items = session.query(MenuItem).filter_by(
         restaurant_id=restaurant_id).all()
     session.close()
@@ -55,10 +54,10 @@ def restaurantsJSON():
 
 @app.route('/login')
 def showLogin():
-  state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                  for x in range(32))
-  login_session['state'] = state
-  return render_template('login.html', STATE=state)
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in range(32))
+    login_session['state'] = state
+    return render_template('login.html', STATE=state)
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -133,6 +132,12 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+# see if user exists, if it doesn't make a new user
+    user_id = getUserID(login_session['email'])
+    if not user_id:
+        user_id = createUser(login_session)
+    login_session['user_id'] = user_id
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -176,6 +181,36 @@ def gdisconnect():
             'Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
+
+# User Helper Functions
+
+
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+                   'email'], picture=login_session['picture'])
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def getUserInfo(user_id):
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+
+def getUserID(email):
+    try:
+        DBSession = sessionmaker(bind=engine)
+        session = DBSession()
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
 
 
 # Show all restaurants
@@ -251,9 +286,14 @@ def showMenu(restaurant_id):
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    creator= getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
-    session.close()
-    return render_template('menu.html', items=items, restaurant=restaurant)
+    if 'username' not in login_session or creator.id != login_session['user_id']:
+        session.close()
+        return render_template('publicmenu.html', items = items, restaurant = restaurant, creator = creator)
+    else:
+      session.close()
+      return render_template('menu.html', items=items, restaurant=restaurant, creator = creator)
 
 
 # Create a new menu item
@@ -263,7 +303,6 @@ def newMenuItem(restaurant_id):
         return redirect('/login')
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if request.method == 'POST':
         newItem = MenuItem(name=request.form['name'], description=request.form['description'],
                            price=request.form['price'], course=request.form['course'], restaurant_id=restaurant_id)
@@ -284,7 +323,6 @@ def editMenuItem(restaurant_id, menu_id):
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     editedItem = session.query(MenuItem).filter_by(id=menu_id).one()
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -311,7 +349,6 @@ def deleteMenuItem(restaurant_id, menu_id):
         return redirect('/login')
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     itemToDelete = session.query(MenuItem).filter_by(id=menu_id).one()
     if request.method == 'POST':
         session.delete(itemToDelete)
