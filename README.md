@@ -4,7 +4,7 @@ Code is modified to use Python 3 instead.
 ## Projects
 This respository includes following projects:
 * Log Analysis
-* Catalog App
+* Catalog App (Google OAuth credentials have been disabled)
 * Linux Server (configuration not included in this repository)
 ## How to use
 See individual project for how to use
