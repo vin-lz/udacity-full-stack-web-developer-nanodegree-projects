@@ -1,5 +1,6 @@
 # udacity-full-stack-web-developer-nanodegree-projects
 This is a repository for Full Stack Web Developer Nanodegree at Udacity. Fall 2019
+Code is modified to use Python 3 instead.
 ## Projects
 This respository includes following projects:
 * Log Analysis
